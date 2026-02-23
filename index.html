@@ -27,7 +27,6 @@ body{
   overflow:hidden;
 }
 
-/* CENTER TEXT */
 .center{
   text-align:center;
   padding:24px;
@@ -35,7 +34,7 @@ body{
   max-width:min(900px, 92vw);
 }
 
-/* NAME (top) */
+/* NAME */
 .name{
   font-size:13px;
   letter-spacing:.25em;
@@ -44,7 +43,7 @@ body{
   margin-bottom:22px;
 }
 
-/* MAIN PHRASE */
+/* PHRASE */
 .phrase{
   font-size: clamp(28px, 6vw, 64px);
   font-weight:700;
@@ -59,7 +58,6 @@ body{
   transform: translateY(0);
 }
 
-/* LANGUAGE LABEL */
 .lang{
   margin-top:14px;
   font-size: 13px;
@@ -68,7 +66,7 @@ body{
   color: var(--muted);
 }
 
-/* HUD FIXED FOR MOBILE */
+/* HUD */
 .hud{
   position:fixed;
   left:50%;
@@ -83,7 +81,6 @@ body{
   background: var(--glass);
   border: 1px solid var(--border);
   backdrop-filter: blur(12px);
-  max-width: min(560px, calc(100vw - 24px));
 }
 
 .hud button{
@@ -100,33 +97,13 @@ body{
 .hud button:hover{
   background: rgba(255,255,255,.08);
 }
-
-/* DESKTOP HINT */
-.hint{
-  position:fixed;
-  right:16px;
-  bottom: calc(14px + env(safe-area-inset-bottom));
-  font-size:12px;
-  padding:8px 12px;
-  border-radius:14px;
-  background: var(--glass);
-  border: 1px solid var(--border);
-  color: var(--muted);
-  backdrop-filter: blur(10px);
-}
-
-@media (max-width: 700px){
-  .hint{ display:none; }
-}
 </style>
 </head>
 
 <body>
 
 <div class="center">
-  <!-- ✅ CHANGE THE NAME HERE -->
-  <div class="name">Wenzhu</div>
-
+  <div id="name" class="name"></div>
   <div id="phrase" class="phrase"></div>
   <div id="lang" class="lang"></div>
 </div>
@@ -137,11 +114,20 @@ body{
   <button id="next">Next</button>
 </div>
 
-<div class="hint">
-  Space = Pause • ← → = Change • F = Fullscreen
-</div>
-
 <script>
+// ===== GET NAME FROM URL =====
+const params = new URLSearchParams(window.location.search);
+const personName = params.get("name");
+
+const nameEl = document.getElementById("name");
+
+if(personName){
+  nameEl.textContent = "For " + personName;
+} else {
+  nameEl.style.display = "none"; // hide if no name
+}
+
+// ===== PHRASES =====
 const PHRASES = [
   { lang: "English", text: "I like you" },
   { lang: "French", text: "Je t’aime bien" },
