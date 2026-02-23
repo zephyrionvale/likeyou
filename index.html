@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>I like you</title>
+
+<style>
+:root{
+  --bg:#000;
+  --text:#fff;
+  --muted:rgba(255,255,255,.55);
+  --glass:rgba(255,255,255,.08);
+  --border:rgba(255,255,255,.16);
+}
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  height:100vh;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  overflow:hidden;
+}
+
+/* CENTER TEXT */
+.center{
+  text-align:center;
+  padding:24px;
+  transform: translateY(-10px);
+  max-width:min(900px, 92vw);
+}
+
+/* NAME (top) */
+.name{
+  font-size:13px;
+  letter-spacing:.25em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.35);
+  margin-bottom:22px;
+}
+
+/* MAIN PHRASE */
+.phrase{
+  font-size: clamp(28px, 6vw, 64px);
+  font-weight:700;
+  opacity:0;
+  transform: translateY(12px);
+  transition: opacity 420ms ease, transform 420ms ease;
+  word-break: break-word;
+}
+
+.phrase.show{
+  opacity:1;
+  transform: translateY(0);
+}
+
+/* LANGUAGE LABEL */
+.lang{
+  margin-top:14px;
+  font-size: 13px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* HUD FIXED FOR MOBILE */
+.hud{
+  position:fixed;
+  left:50%;
+  transform:translateX(-50%);
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  display:flex;
+  gap:12px;
+  align-items:center;
+  justify-content:center;
+  padding:10px 14px;
+  border-radius:16px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  max-width: min(560px, calc(100vw - 24px));
+}
+
+.hud button{
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius:12px;
+  padding:8px 14px;
+  font-size:14px;
+  cursor:pointer;
+  transition: .2s ease;
+}
+
+.hud button:hover{
+  background: rgba(255,255,255,.08);
+}
+
+/* DESKTOP HINT */
+.hint{
+  position:fixed;
+  right:16px;
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  font-size:12px;
+  padding:8px 12px;
+  border-radius:14px;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  backdrop-filter: blur(10px);
+}
+
+@media (max-width: 700px){
+  .hint{ display:none; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="center">
+  <!-- ✅ CHANGE THE NAME HERE -->
+  <div class="name">Wenzhu</div>
+
+  <div id="phrase" class="phrase"></div>
+  <div id="lang" class="lang"></div>
+</div>
+
+<div class="hud">
+  <button id="toggle">Pause</button>
+  <button id="prev">Prev</button>
+  <button id="next">Next</button>
+</div>
+
+<div class="hint">
+  Space = Pause • ← → = Change • F = Fullscreen
+</div>
+
+<script>
+const PHRASES = [
+  { lang: "English", text: "I like you" },
+  { lang: "French", text: "Je t’aime bien" },
+  { lang: "Spanish", text: "Me gustas" },
+  { lang: "Portuguese", text: "Gosto de você" },
+  { lang: "Italian", text: "Mi piaci" },
+  { lang: "German", text: "Ich mag dich" },
+  { lang: "Russian", text: "Ты мне нравишься" },
+  { lang: "Arabic", text: "أنا معجب بك" },
+  { lang: "Hindi", text: "मुझे तुम पसंद हो" },
+  { lang: "Bengali", text: "আমি তোমাকে পছন্দ করি" },
+  { lang: "Chinese", text: "我喜欢你" },
+  { lang: "Japanese", text: "好きです" },
+  { lang: "Korean", text: "좋아해" }
+];
+
+const phraseEl = document.getElementById("phrase");
+const langEl = document.getElementById("lang");
+const toggleBtn = document.getElementById("toggle");
+const prevBtn = document.getElementById("prev");
+const nextBtn = document.getElementById("next");
+
+let index = 0;
+let running = true;
+let interval = null;
+
+function show(i){
+  phraseEl.classList.remove("show");
+
+  setTimeout(() => {
+    phraseEl.textContent = PHRASES[i].text;
+    langEl.textContent = PHRASES[i].lang;
+    phraseEl.classList.add("show");
+  }, 200);
+}
+
+function start(){
+  interval = setInterval(() => {
+    if(!running) return;
+    index = (index + 1) % PHRASES.length;
+    show(index);
+  }, 1800);
+}
+
+function toggle(){
+  running = !running;
+  toggleBtn.textContent = running ? "Pause" : "Play";
+}
+
+function prev(){
+  index = (index - 1 + PHRASES.length) % PHRASES.length;
+  show(index);
+}
+
+function next(){
+  index = (index + 1) % PHRASES.length;
+  show(index);
+}
+
+toggleBtn.onclick = toggle;
+prevBtn.onclick = prev;
+nextBtn.onclick = next;
+
+window.addEventListener("keydown", e=>{
+  if(e.code==="Space"){ e.preventDefault(); toggle(); }
+  if(e.key==="ArrowLeft") prev();
+  if(e.key==="ArrowRight") next();
+  if(e.key.toLowerCase()==="f"){
+    if(!document.fullscreenElement){
+      document.documentElement.requestFullscreen?.();
+    } else {
+      document.exitFullscreen?.();
+    }
+  }
+});
+
+show(index);
+start();
+</script>
+
+</body>
+</html>
