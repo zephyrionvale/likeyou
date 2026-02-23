@@ -122,7 +122,7 @@ const personName = params.get("name");
 const nameEl = document.getElementById("name");
 
 if(personName){
-  nameEl.textContent = "For " + personName;
+  nameEl.textContent = personName;
 } else {
   nameEl.style.display = "none"; // hide if no name
 }
